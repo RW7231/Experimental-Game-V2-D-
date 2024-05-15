@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://dpit2m1fsokbd"]
+
+[ext_resource type="Script" path="res://Scripts/OverworldMap.gd" id="1_asvcp"]
+
+[node name="Node2D" type="Node2D"]
+scale = Vector2(0.991453, 1)
+script = ExtResource("1_asvcp")
+
+[node name="Camera2D" type="Camera2D" parent="."]

@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://b7si0vyeevec7"]
+
+[ext_resource type="Texture2D" uid="uid://bww48x20tu8pv" path="res://Assets/Grid Placeholder.png" id="1_1du56"]
+
+[node name="GridPlaceholder" type="Sprite2D"]
+texture_filter = 1
+texture_repeat = 1
+texture = ExtResource("1_1du56")
