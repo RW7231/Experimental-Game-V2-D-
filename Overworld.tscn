@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://Scripts/OverworldMap.gd" id="1_asvcp"]
 
-[node name="Node2D" type="Node2D"]
+[node name="Map" type="Node2D"]
 scale = Vector2(0.991453, 1)
 script = ExtResource("1_asvcp")
 

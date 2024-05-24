@@ -53,31 +53,16 @@ func fillWorld():
 			
 			# add this gridpiece to the scene and array
 			add_child(gridpiece)
-	
 
-# we want to handle player movement in the grid system, 
-# this way we can prevent movement with obstacles
-func _input(event):
-	if event.is_action_pressed("Up"):
-		# we want to check that the player is within the grid and that the position is not already filled
-		if player.position.y > Gridmin and worldGrid[playerpos[0]][playerpos[1] - 1] != 1:
-			player.position += Vector2(0, -16)
-			playerpos = [playerpos[0], playerpos[1] - 1]
-		
-	if event.is_action_pressed("Down"):
-		if player.position.y < Gridmax and worldGrid[playerpos[0]][playerpos[1] + 1] != 1:
-			player.position += Vector2(0, 16)
-			playerpos = [playerpos[0], playerpos[1] + 1]
-		
-	if event.is_action_pressed("Left"):
-		if player.position.x > Gridmin and worldGrid[playerpos[0] - 1][playerpos[1]] != 1:
-			player.position += Vector2(-16, 0)
-			playerpos = [playerpos[0] - 1, playerpos[1]]
-		
-	if event.is_action_pressed("Right"):
-		if player.position.x < Gridmax and worldGrid[playerpos[0] + 1][playerpos[1]] != 1:
-			player.position += Vector2(16, 0)
-			playerpos = [playerpos[0] + 1, playerpos[1]]
+# let player make requests to move, check if it is valid
+func checkPos(desiredPos):
+	# if the position goes outside of the grid, refuse it
+	if desiredPos[0] < 0 or desiredPos[0] >= size or desiredPos[1] < 0 or desiredPos[1] >= size:
+		return false
+	
+	# if the position is not a blank space (enemy, wall, etc) deny it
+	return worldGrid[desiredPos[0]][desiredPos[1]] == 0
+			
 
 
 # Called when the node enters the scene tree for the first time.
@@ -88,6 +73,6 @@ func _ready():
 	fillWorld()
 	player = PlayerObject.instantiate()
 	player.position = Vector2(32, 32)
-	add_child(player)
+	self.add_child(player)
 	
 
