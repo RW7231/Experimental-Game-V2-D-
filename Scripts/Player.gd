@@ -4,6 +4,11 @@ var currentPosition = [2, 2]
 
 var map
 
+var health = 10
+var attack = 1
+var defense = 1
+var AC = 10
+
 # get_parent is a bad function that barely works half the time
 # I have to run it in _process to ensure that it actually gets the map	
 func _process(delta):
@@ -39,4 +44,28 @@ func _input(event):
 		if map.checkPos(desiredPos):
 			currentPosition = desiredPos
 			self.position += Vector2(16, 0)
+			
+	if event.is_action_pressed("UpLeft"):
+		var desiredPos = [currentPosition[0]-1, currentPosition[1]-1]
+		if map.checkPos(desiredPos):
+			currentPosition = desiredPos
+			self.position += Vector2(-16, -16)
+			
+	if event.is_action_pressed("UpRight"):
+		var desiredPos = [currentPosition[0]+1, currentPosition[1]-1]
+		if map.checkPos(desiredPos):
+			currentPosition = desiredPos
+			self.position += Vector2(16, -16)
+			
+	if event.is_action_pressed("DownLeft"):
+		var desiredPos = [currentPosition[0]-1, currentPosition[1]+1]
+		if map.checkPos(desiredPos):
+			currentPosition = desiredPos
+			self.position += Vector2(-16, 16)
+			
+	if event.is_action_pressed("DownRight"):
+		var desiredPos = [currentPosition[0]+1, currentPosition[1]+1]
+		if map.checkPos(desiredPos):
+			currentPosition = desiredPos
+			self.position += Vector2(16, 16)
 		

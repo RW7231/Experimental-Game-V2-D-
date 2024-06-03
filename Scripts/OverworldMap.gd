@@ -4,6 +4,7 @@ extends Node2D
 var GridObject = preload("res://Prefabs/grid_placeholder.tscn")
 var PlayerObject = preload("res://Prefabs/player.tscn")
 var WallObject = preload("res://Prefabs/wall.tscn")
+var EnemyObject = preload("res://Prefabs/enemy.tscn")
 
 var size = 5
 
@@ -34,6 +35,9 @@ func fillWorld():
 			# initialize the gridpiece
 			var gridpiece
 			
+			# initialize enemies
+			var foe
+			
 			# generate a random number between 0 and 99
 			# if it is less than 10, generate a wall, otherwise generate a blank space
 			if (randi() % 100) < 10:
@@ -46,6 +50,12 @@ func fillWorld():
 			else:
 				gridpiece = GridObject.instantiate()
 				worldGrid[i][j] = 0
+				
+				if (randi() % 100) < 10:
+					foe = EnemyObject.instantiate()
+					foe.position = Vector2(i * 16, j * 16)
+					worldGrid[i][j] = 2
+					add_child(foe)
 				
 			# from there, change its position in the world.
 			# grid pieces are 16x16 pixels in size, multiply i and j by that

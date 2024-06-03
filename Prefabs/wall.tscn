@@ -3,5 +3,4 @@
 [ext_resource type="Texture2D" uid="uid://bxg0udkbaim6u" path="res://Assets/Wall.png" id="1_brje3"]
 
 [node name="Wall" type="Sprite2D"]
-position = Vector2(47.4052, 31)
 texture = ExtResource("1_brje3")
