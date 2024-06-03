@@ -11,7 +11,7 @@ var AC = 10
 
 # get_parent is a bad function that barely works half the time
 # I have to run it in _process to ensure that it actually gets the map	
-func _process(delta):
+func _process(_delta):
 	if map == null:
 		map = self.get_parent()
 	else:

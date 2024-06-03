@@ -28,11 +28,20 @@ func make2dArray():
 	return temp
 	
 func fillWorld():
+	
+	# fill the grid with 0s initially
+	for i in size:
+		for j in size:
+			worldGrid[i][j] = 0
+	
+	# this represents the player
+	worldGrid[2][2] = 3
+	
 	# we can then fill the array with the world grid
 	for i in size:
 		for j in size:
 			
-			# initialize the gridpiece
+			# initialize the gridpiece this will either be an impassable wall or a floor
 			var gridpiece
 			
 			# initialize enemies
@@ -40,7 +49,8 @@ func fillWorld():
 			
 			# generate a random number between 0 and 99
 			# if it is less than 10, generate a wall, otherwise generate a blank space
-			if (randi() % 100) < 10:
+			# additionally we shoud prevent a wall from spawning on a player, that would be weird
+			if (randi() % 100) < 10 and worldGrid[i][j] == 0:
 				gridpiece = WallObject.instantiate()
 				worldGrid[i][j] = 1
 				#var string = "Wall on %d %d"
@@ -63,6 +73,7 @@ func fillWorld():
 			
 			# add this gridpiece to the scene and array
 			add_child(gridpiece)
+			
 
 # let player make requests to move, check if it is valid
 func checkPos(desiredPos):
