@@ -17,6 +17,8 @@ var Gridmax = 64
 
 var playerpos = [2, 2]
 
+var pathFound
+
 # we can use a 2d array to create a digital representation of the world map
 func make2dArray():
 	# start with an empty array, and make it 2d
@@ -53,14 +55,13 @@ func fillWorld():
 			if (randi() % 100) < 10 and worldGrid[i][j] == 0:
 				gridpiece = WallObject.instantiate()
 				worldGrid[i][j] = 1
-				#var string = "Wall on %d %d"
-				#var fullString = string % [i, j]
-				#print(fullString)
-				
+			
+			# wall failed to generate, create a floor object instead	
 			else:
 				gridpiece = GridObject.instantiate()
 				worldGrid[i][j] = 0
 				
+				# roll a chance to spawn an enemy as well
 				if (randi() % 100) < 10:
 					foe = EnemyObject.instantiate()
 					foe.position = Vector2(i * 16, j * 16)
@@ -73,6 +74,72 @@ func fillWorld():
 			
 			# add this gridpiece to the scene and array
 			add_child(gridpiece)
+	
+	# one more thing, fix up the map
+	# it isn't very fun when a player gets softlocked because the walls spawned in all directions around them
+	# in the off chance a part of the map gets blocked off, I want to recover
+	# WIP for now
+	
+	# for each grid object...
+	for i in size:
+		for j in size:
+			# check to see if it is a floor or is occupied by an enemy
+			if worldGrid[i][j] == 0 or worldGrid[i][j] == 2:
+				# start by assuming no path exists for each grid object
+				pathFound = false
+				# try to find a path
+				findPath([i, j], [2,2], [])
+				# if no path was found then fix the map
+				if not pathFound:
+					fixMap([i, j], [2, 2])
+
+# this functionality will come soon, but should be simple
+# just go from player position to the blocked off part of the map, deleting any walls in the way	
+func fixMap(location, playerpos):
+	pass
+			
+	
+	
+
+# find the path to a specific location
+func findPath(location, curpos, visited):
+	
+	# start by adding the current position to our visited array
+	visited.append(curpos)
+	
+	# if the current position matches our desired position, congrats, a path has been found!
+	if curpos.hash() == location.hash():
+		print("Valid path has been found!")
+		pathFound = true
+		return visited
+	
+	# we must now check each direction around current position not in visited
+	
+	# start with an empty array, we will fill it with this position's neighbors provided they have not been visited
+	var dirstoVisit = []
+	
+	# check all 8 directions around this grid location
+	for i in range(-1, 2):
+		for j in range(-1, 2):
+			if i != 0 and j != 0:
+				# check to make sure this direction is in our world
+				if location[0]+i >= 0 and location[0]+i <= size-1 and location[1]+j >= 0 and location[1]+j <= size-1:
+					# if it is, check to see if it is a blank space (a floor space) or an enemy and has not already been visited
+					if (worldGrid[location[0]+i][location[1]+j] == 0 or worldGrid[location[0]+i][location[1]+j] == 2) and not visited.has([location[0]+i, location[1]+j]):
+						# if all checks pass, add it to places to visit
+						dirstoVisit.append([location[0]+i, location[1]+j])
+	
+	
+	# if directions have been found, recursively call this function using each direction as a new curpos
+	# update visited each loop	
+	for direction in dirstoVisit:
+		visited = findPath(location, direction, visited)
+	
+	# once each direction has been checked, return visited	
+	return visited
+		
+	
+	
 			
 
 # let player make requests to move, check if it is valid
