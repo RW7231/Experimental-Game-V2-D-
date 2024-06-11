@@ -42,36 +42,39 @@ func fillWorld():
 	for i in size:
 		for j in size:
 			
-			# initialize the gridpiece this will either be an impassable wall or a floor
 			var gridpiece
-			
-			# initialize enemies
 			var foe
 			
-			# generate a random number between 0 and 99
-			# if it is less than 10, generate a wall, otherwise generate a blank space
-			# additionally we shoud prevent a wall from spawning on a player, that would be weird
-			if (randi() % 100) < 10 and worldGrid[i][j] == 0:
-				gridpiece = WallObject.instantiate()
-				worldGrid[i][j] = 1
+			if i != playerpos[0] or j != playerpos[1]:
 			
-			# wall failed to generate, create a floor object instead	
+				# generate a random number between 0 and 99
+				# if it is less than 10, generate a wall, otherwise generate a blank space
+				# additionally we shoud prevent a wall from spawning on a player, that would be weird
+				if (randi() % 100) < 10 and worldGrid[i][j] == 0:
+					gridpiece = WallObject.instantiate()
+					worldGrid[i][j] = 1
+			
+				# wall failed to generate, create a floor object instead	
+				else:
+					gridpiece = GridObject.instantiate()
+					worldGrid[i][j] = 0
+				
+					# roll a chance to spawn an enemy as well
+					if (randi() % 100) < 10:
+						foe = EnemyObject.instantiate()
+						foe.position = Vector2(i * 16, j * 16)
+						worldGrid[i][j] = 2
+						add_child(foe)
+				
 			else:
 				gridpiece = GridObject.instantiate()
 				worldGrid[i][j] = 0
-				
-				# roll a chance to spawn an enemy as well
-				if (randi() % 100) < 10:
-					foe = EnemyObject.instantiate()
-					foe.position = Vector2(i * 16, j * 16)
-					worldGrid[i][j] = 2
-					add_child(foe)
 				
 			# from there, change its position in the world.
 			# grid pieces are 16x16 pixels in size, multiply i and j by that
 			gridpiece.position = Vector2(i*16, j*16)
 			
-			# add this gridpiece to the scene and array
+				# add this gridpiece to the scene and array
 			add_child(gridpiece)
 	
 	# one more thing, fix up the map
@@ -97,6 +100,7 @@ func fillWorld():
 # this functionality will come soon, but should be simple
 # just go from player position to the blocked off part of the map, deleting any walls in the way	
 func fixMap(location, playerpos):
+	print("Location ", location[0], ", ", location[1], " is invalid and must be fixed")
 	pass
 			
 	
@@ -170,7 +174,6 @@ func _ready():
 	fillWorld()
 	player = PlayerObject.instantiate()
 	player.position = Vector2(32, 32)
-	worldGrid[2][2] = 3
 	self.add_child(player)
 	
 
