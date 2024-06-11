@@ -19,6 +19,8 @@ var playerpos = [2, 2]
 
 var pathFound
 
+var knownValidPositions
+
 # we can use a 2d array to create a digital representation of the world map
 func make2dArray():
 	# start with an empty array, and make it 2d
@@ -35,9 +37,6 @@ func fillWorld():
 	for i in size:
 		for j in size:
 			worldGrid[i][j] = 0
-	
-	# this represents the player
-	worldGrid[2][2] = 3
 	
 	# we can then fill the array with the world grid
 	for i in size:
@@ -80,6 +79,8 @@ func fillWorld():
 	# in the off chance a part of the map gets blocked off, I want to recover
 	# WIP for now
 	
+	knownValidPositions = []
+	
 	# for each grid object...
 	for i in size:
 		for j in size:
@@ -104,12 +105,19 @@ func fixMap(location, playerpos):
 # find the path to a specific location
 func findPath(location, curpos, visited):
 	
-	# start by adding the current position to our visited array
+	# consult the memoized table first, if it is there then the path is already valid
+	if knownValidPositions.has([location[0], location[1]]):
+		print("This position is a known valid ", location[0], ", ", location[1])
+		pathFound = true
+		return visited
+	
+	# start by adding the current position to our visited array and memoized table
 	visited.append(curpos)
+	knownValidPositions.append(curpos)
 	
 	# if the current position matches our desired position, congrats, a path has been found!
 	if curpos.hash() == location.hash():
-		print("Valid path has been found!")
+		print("Valid path has been found for ", location[0], ", ", location[1])
 		pathFound = true
 		return visited
 	
@@ -121,19 +129,20 @@ func findPath(location, curpos, visited):
 	# check all 8 directions around this grid location
 	for i in range(-1, 2):
 		for j in range(-1, 2):
-			if i != 0 and j != 0:
+			if i != 0 or j != 0:
 				# check to make sure this direction is in our world
-				if location[0]+i >= 0 and location[0]+i <= size-1 and location[1]+j >= 0 and location[1]+j <= size-1:
+				if curpos[0]+i >= 0 and curpos[0]+i <= size-1 and curpos[1]+j >= 0 and curpos[1]+j <= size-1:
 					# if it is, check to see if it is a blank space (a floor space) or an enemy and has not already been visited
-					if (worldGrid[location[0]+i][location[1]+j] == 0 or worldGrid[location[0]+i][location[1]+j] == 2) and not visited.has([location[0]+i, location[1]+j]):
+					if (worldGrid[curpos[0]+i][curpos[1]+j] == 0 or worldGrid[curpos[0]+i][curpos[1]+j] == 2) and not visited.has([curpos[0]+i, curpos[1]+j]):
 						# if all checks pass, add it to places to visit
-						dirstoVisit.append([location[0]+i, location[1]+j])
+						dirstoVisit.append([curpos[0]+i, curpos[1]+j])
 	
 	
 	# if directions have been found, recursively call this function using each direction as a new curpos
 	# update visited each loop	
 	for direction in dirstoVisit:
-		visited = findPath(location, direction, visited)
+		if not pathFound:
+			visited += findPath(location, direction, visited)
 	
 	# once each direction has been checked, return visited	
 	return visited
@@ -161,6 +170,7 @@ func _ready():
 	fillWorld()
 	player = PlayerObject.instantiate()
 	player.position = Vector2(32, 32)
+	worldGrid[2][2] = 3
 	self.add_child(player)
 	
 
