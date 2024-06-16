@@ -10,6 +10,9 @@ var size = 5
 
 var worldGrid
 
+# this variable stores the actual tiles used in the game map
+var tileGrid
+
 var player
 
 var Gridmin = 0
@@ -37,6 +40,7 @@ func fillWorld():
 	for i in size:
 		for j in size:
 			worldGrid[i][j] = 0
+			tileGrid[i][j] = null
 	
 	# we can then fill the array with the world grid
 	for i in size:
@@ -45,18 +49,21 @@ func fillWorld():
 			var gridpiece
 			var foe
 			
+			# is this not the player's position?
 			if i != playerpos[0] or j != playerpos[1]:
 			
 				# generate a random number between 0 and 99
 				# if it is less than 10, generate a wall, otherwise generate a blank space
 				# additionally we shoud prevent a wall from spawning on a player, that would be weird
-				if (randi() % 100) < 10 and worldGrid[i][j] == 0:
+				if (randi() % 100) < 70 and worldGrid[i][j] == 0:
 					gridpiece = WallObject.instantiate()
+					tileGrid[i][j] = gridpiece
 					worldGrid[i][j] = 1
 			
 				# wall failed to generate, create a floor object instead	
 				else:
 					gridpiece = GridObject.instantiate()
+					tileGrid[i][j] = gridpiece
 					worldGrid[i][j] = 0
 				
 					# roll a chance to spawn an enemy as well
@@ -65,9 +72,11 @@ func fillWorld():
 						foe.position = Vector2(i * 16, j * 16)
 						worldGrid[i][j] = 2
 						add_child(foe)
-				
+			
+			# this is the player's spot, put down a floor	
 			else:
 				gridpiece = GridObject.instantiate()
+				tileGrid[i][j] = gridpiece
 				worldGrid[i][j] = 0
 				
 			# from there, change its position in the world.
@@ -76,7 +85,12 @@ func fillWorld():
 			
 				# add this gridpiece to the scene and array
 			add_child(gridpiece)
+			
 	
+	checkMap()
+					
+
+func checkMap():
 	# one more thing, fix up the map
 	# it isn't very fun when a player gets softlocked because the walls spawned in all directions around them
 	# in the off chance a part of the map gets blocked off, I want to recover
@@ -96,12 +110,46 @@ func fillWorld():
 				# if no path was found then fix the map
 				if not pathFound:
 					fixMap([i, j], [2, 2])
+					
 
 # this functionality will come soon, but should be simple
 # just go from player position to the blocked off part of the map, deleting any walls in the way	
 func fixMap(location, playerpos):
 	print("Location ", location[0], ", ", location[1], " is invalid and must be fixed")
-	pass
+	
+	if location[0] < playerpos[0]:
+		for i in range(location[0], playerpos[0]):
+			var newFloor = GridObject.instantiate()
+			newFloor.position = Vector2(i*16, playerpos[1]*16)
+			self.add_child(newFloor)
+			tileGrid[i][playerpos[1]].queue_free()
+			tileGrid[i][playerpos[1]] = newFloor
+			worldGrid[i][playerpos[1]] = 0
+	else:
+		for i in range(playerpos[0], location[0]):
+			var newFloor = GridObject.instantiate()
+			newFloor.position = Vector2(i*16, playerpos[1]*16)
+			self.add_child(newFloor)
+			tileGrid[i][playerpos[1]].queue_free()
+			tileGrid[i][playerpos[1]] = newFloor
+			worldGrid[i][playerpos[1]] = 0
+			
+	if location[1] < playerpos[1]:
+		for i in range(location[1], playerpos[1]):
+			var newFloor = GridObject.instantiate()
+			newFloor.position = Vector2(location[0]*16, i*16)
+			self.add_child(newFloor)
+			tileGrid[location[0]][i].queue_free()
+			tileGrid[location[0]][i] = newFloor
+			worldGrid[location[0]][i] = 0
+	else:
+		for i in range(playerpos[1], location[1]):
+			var newFloor = GridObject.instantiate()
+			newFloor.position = Vector2(location[0]*16, i*16)
+			self.add_child(newFloor)
+			tileGrid[location[0]][i].queue_free()
+			tileGrid[location[0]][i] = newFloor
+			worldGrid[location[0]][i] = 0
 			
 	
 	
@@ -169,8 +217,9 @@ func checkPos(desiredPos):
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	# consistent generation
-	seed(3)
+	seed(4)
 	worldGrid = make2dArray()
+	tileGrid = make2dArray()
 	fillWorld()
 	player = PlayerObject.instantiate()
 	player.position = Vector2(32, 32)
