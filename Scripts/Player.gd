@@ -16,6 +16,12 @@ func _process(_delta):
 		map = self.get_parent()
 	else:
 		set_process(false)
+		
+func setStartPos(value):
+	currentPosition = [value, value]
+	
+func getPosition():
+	return currentPosition
 
 # we want to handle player movement in the grid system, 
 func _input(event):

@@ -6,7 +6,7 @@ var PlayerObject = preload("res://Prefabs/player.tscn")
 var WallObject = preload("res://Prefabs/wall.tscn")
 var EnemyObject = preload("res://Prefabs/enemy.tscn")
 
-var size = 5
+var size = 6
 
 var worldGrid
 
@@ -32,15 +32,14 @@ func make2dArray():
 		temp.append([])
 		for j in size:
 			temp[i].append(null)
+			
+	for i in size:
+		for j in size:
+			temp[i][j] = 0
+	
 	return temp
 	
 func fillWorld():
-	
-	# fill the grid with 0s initially
-	for i in size:
-		for j in size:
-			worldGrid[i][j] = 0
-			tileGrid[i][j] = null
 	
 	# we can then fill the array with the world grid
 	for i in size:
@@ -70,7 +69,6 @@ func fillWorld():
 					if (randi() % 100) < 10:
 						foe = EnemyObject.instantiate()
 						foe.position = Vector2(i * 16, j * 16)
-						worldGrid[i][j] = 2
 						add_child(foe)
 			
 			# this is the player's spot, put down a floor	
@@ -101,8 +99,8 @@ func checkMap():
 	# for each grid object...
 	for i in size:
 		for j in size:
-			# check to see if it is a floor or is occupied by an enemy
-			if worldGrid[i][j] == 0 or worldGrid[i][j] == 2:
+			# check to see if it is a floor
+			if worldGrid[i][j] == 0:
 				# start by assuming no path exists for each grid object
 				pathFound = false
 				# try to find a path
@@ -185,7 +183,7 @@ func findPath(location, curpos, visited):
 				# check to make sure this direction is in our world
 				if curpos[0]+i >= 0 and curpos[0]+i <= size-1 and curpos[1]+j >= 0 and curpos[1]+j <= size-1:
 					# if it is, check to see if it is a blank space (a floor space) or an enemy and has not already been visited
-					if (worldGrid[curpos[0]+i][curpos[1]+j] == 0 or worldGrid[curpos[0]+i][curpos[1]+j] == 2) and not visited.has([curpos[0]+i, curpos[1]+j]):
+					if worldGrid[curpos[0]+i][curpos[1]+j] == 0 and not visited.has([curpos[0]+i, curpos[1]+j]):
 						# if all checks pass, add it to places to visit
 						dirstoVisit.append([curpos[0]+i, curpos[1]+j])
 	
@@ -213,16 +211,19 @@ func checkPos(desiredPos):
 	return worldGrid[desiredPos[0]][desiredPos[1]] == 0
 			
 
-
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	# consistent generation
 	seed(4)
 	worldGrid = make2dArray()
 	tileGrid = make2dArray()
-	fillWorld()
 	player = PlayerObject.instantiate()
-	player.position = Vector2(32, 32)
+	player.setStartPos(size/2)
+	
+	playerpos = player.getPosition()
+	player.position = Vector2(16*playerpos[0], 16*playerpos[1])
+	
+	fillWorld()
 	self.add_child(player)
 	
 
