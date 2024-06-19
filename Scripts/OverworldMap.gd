@@ -6,7 +6,7 @@ var PlayerObject = preload("res://Prefabs/player.tscn")
 var WallObject = preload("res://Prefabs/wall.tscn")
 var EnemyObject = preload("res://Prefabs/enemy.tscn")
 
-var size = 6
+var size = 7
 
 var worldGrid
 
@@ -15,14 +15,13 @@ var tileGrid
 
 var player
 
-var Gridmin = 0
-var Gridmax = 64
-
 var playerpos = [2, 2]
 
 var pathFound
 
 var knownValidPositions
+
+var enemies = []
 
 # we can use a 2d array to create a digital representation of the world map
 func make2dArray():
@@ -70,6 +69,8 @@ func fillWorld():
 						foe = EnemyObject.instantiate()
 						foe.position = Vector2(i * 16, j * 16)
 						add_child(foe)
+						enemies.append(foe)
+						foe.setGridLocation([i,j])
 			
 			# this is the player's spot, put down a floor	
 			else:
@@ -209,6 +210,14 @@ func checkPos(desiredPos):
 	
 	# if the position is not a blank space (enemy, wall, etc) deny it
 	return worldGrid[desiredPos[0]][desiredPos[1]] == 0
+	
+func turn():
+	for enemy in enemies:
+		enemy.turn()
+		
+
+func getSize():
+	return size
 			
 
 # Called when the node enters the scene tree for the first time.

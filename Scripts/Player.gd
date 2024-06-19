@@ -31,6 +31,7 @@ func _input(event):
 		if map.checkPos(desiredPos):
 			currentPosition = desiredPos
 			self.position += Vector2(0, -16)
+			map.turn()
 		
 	if event.is_action_pressed("Down"):
 		var desiredPos = [currentPosition[0], currentPosition[1]+1]
@@ -43,6 +44,7 @@ func _input(event):
 		if map.checkPos(desiredPos):
 			currentPosition = desiredPos
 			self.position += Vector2(-16, 0)
+			map.turn()
 		
 		
 	if event.is_action_pressed("Right"):
@@ -50,28 +52,33 @@ func _input(event):
 		if map.checkPos(desiredPos):
 			currentPosition = desiredPos
 			self.position += Vector2(16, 0)
+			map.turn()
 			
 	if event.is_action_pressed("UpLeft"):
 		var desiredPos = [currentPosition[0]-1, currentPosition[1]-1]
 		if map.checkPos(desiredPos):
 			currentPosition = desiredPos
 			self.position += Vector2(-16, -16)
+			map.turn()
 			
 	if event.is_action_pressed("UpRight"):
 		var desiredPos = [currentPosition[0]+1, currentPosition[1]-1]
 		if map.checkPos(desiredPos):
 			currentPosition = desiredPos
 			self.position += Vector2(16, -16)
+			map.turn()
 			
 	if event.is_action_pressed("DownLeft"):
 		var desiredPos = [currentPosition[0]-1, currentPosition[1]+1]
 		if map.checkPos(desiredPos):
 			currentPosition = desiredPos
 			self.position += Vector2(-16, 16)
+			map.turn()
 			
 	if event.is_action_pressed("DownRight"):
 		var desiredPos = [currentPosition[0]+1, currentPosition[1]+1]
 		if map.checkPos(desiredPos):
 			currentPosition = desiredPos
 			self.position += Vector2(16, 16)
+			map.turn()
 		

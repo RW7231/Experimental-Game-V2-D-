@@ -5,6 +5,13 @@ var AC
 var attack
 var defense
 
+var gridLocation
+
+func setGridLocation(location):
+	gridLocation = location
+	
+func getGridLocation():
+	return gridLocation
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -15,4 +22,41 @@ func _ready():
 
 
 func turn():
-	pass
+	var map = self.get_parent()
+	
+	var selectedLocation = false
+	var desiredPos = gridLocation
+	
+	var validLocations = []
+	
+	# first we need to gather all potential locations the enemy can go to
+	# this allows us to exclude any locations that are outside of the grid
+	for i in range(-1, 2):
+		for j in range(-1, 2):
+			if gridLocation[0]+i >= 0 and gridLocation[0]+i <= map.getSize()-1 and gridLocation[1]+j >= 0 and gridLocation[1]+j <= map.getSize()-1:
+				validLocations.append([gridLocation[0]+i, gridLocation[1]+j])
+	
+	# now we need to help the enemy find a location to go. As of now they are blind and wander aimlessly			
+	while not selectedLocation:
+		
+		# if there are no valid locations, just hold still this turn
+		if validLocations.is_empty():
+			selectedLocation = true
+		
+		# otherwise generate a random choice from our valid locations
+		var randNum = randi() % validLocations.size()
+		
+		# check to see if there is not a wall in this position already
+		# if nothing is there, it's a valid position and we can go there
+		if map.checkPos(validLocations[randNum]):
+			desiredPos = validLocations[randNum]
+			selectedLocation = true
+		
+		# otherwise remove this position
+		else:
+			validLocations.remove_at(randNum)
+	
+	# finally, adjust the grid location and move this enemy
+	gridLocation = desiredPos
+	self.position = Vector2(16*gridLocation[0], 16*gridLocation[1])
+				
