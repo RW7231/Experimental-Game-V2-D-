@@ -6,7 +6,7 @@ var PlayerObject = preload("res://Prefabs/player.tscn")
 var WallObject = preload("res://Prefabs/wall.tscn")
 var EnemyObject = preload("res://Prefabs/enemy.tscn")
 
-var size = 20
+var size = 10
 
 var worldGrid
 

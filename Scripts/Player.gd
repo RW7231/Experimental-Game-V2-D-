@@ -38,6 +38,7 @@ func _input(event):
 		if map.checkPos(desiredPos):
 			currentPosition = desiredPos
 			self.position += Vector2(0, 16)
+			map.turn()
 		
 	if event.is_action_pressed("Left"):
 		var desiredPos = [currentPosition[0]-1, currentPosition[1]]
