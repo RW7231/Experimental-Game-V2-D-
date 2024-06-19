@@ -6,7 +6,7 @@ var PlayerObject = preload("res://Prefabs/player.tscn")
 var WallObject = preload("res://Prefabs/wall.tscn")
 var EnemyObject = preload("res://Prefabs/enemy.tscn")
 
-var size = 7
+var size = 20
 
 var worldGrid
 
@@ -193,7 +193,11 @@ func findPath(location, curpos, visited):
 	# update visited each loop	
 	for direction in dirstoVisit:
 		if not pathFound:
-			visited += findPath(location, direction, visited)
+			var newVisited = findPath(location, direction, visited)
+			
+			for entry in newVisited:
+				if not visited.has(entry):
+					visited.append(entry)
 	
 	# once each direction has been checked, return visited	
 	return visited
@@ -210,7 +214,8 @@ func checkPos(desiredPos):
 	
 	# if the position is not a blank space (enemy, wall, etc) deny it
 	return worldGrid[desiredPos[0]][desiredPos[1]] == 0
-	
+
+# the player has taken an action, now every other entity can have a turn	
 func turn():
 	for enemy in enemies:
 		enemy.turn()
