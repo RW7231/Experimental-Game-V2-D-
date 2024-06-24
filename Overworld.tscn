@@ -5,5 +5,3 @@
 [node name="Map" type="Node2D"]
 scale = Vector2(0.991453, 1)
 script = ExtResource("1_asvcp")
-
-[node name="Camera2D" type="Camera2D" parent="."]

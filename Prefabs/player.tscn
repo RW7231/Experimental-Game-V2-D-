@@ -6,3 +6,7 @@
 [node name="Player" type="Sprite2D"]
 texture = ExtResource("1_0wl2c")
 script = ExtResource("2_2kwm5")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+zoom = Vector2(2, 2)
+position_smoothing_enabled = true
