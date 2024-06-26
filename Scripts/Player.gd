@@ -9,6 +9,11 @@ var attack = 1
 var defense = 1
 var AC = 10
 
+# this is a placeholder for now, higher values means slower player
+var speed = 5
+
+var validAction
+
 # get_parent is a bad function that barely works half the time
 # I have to run it in _process to ensure that it actually gets the map	
 func _process(_delta):
@@ -25,27 +30,31 @@ func getPosition():
 
 # we want to handle player movement in the grid system, 
 func _input(event):
+	
+	# if a valid action is taken take a number of turns equal to speed
+	validAction = false
+	
 	# check the player direction, if the position is valid, move the player there
 	if event.is_action_pressed("Up"):
 		var desiredPos = [currentPosition[0], currentPosition[1]-1]
 		if map.checkPos(desiredPos):
 			currentPosition = desiredPos
 			self.position += Vector2(0, -16)
-			map.turn()
+			validAction = true
 		
 	if event.is_action_pressed("Down"):
 		var desiredPos = [currentPosition[0], currentPosition[1]+1]
 		if map.checkPos(desiredPos):
 			currentPosition = desiredPos
 			self.position += Vector2(0, 16)
-			map.turn()
+			validAction = true
 		
 	if event.is_action_pressed("Left"):
 		var desiredPos = [currentPosition[0]-1, currentPosition[1]]
 		if map.checkPos(desiredPos):
 			currentPosition = desiredPos
 			self.position += Vector2(-16, 0)
-			map.turn()
+			validAction = true
 		
 		
 	if event.is_action_pressed("Right"):
@@ -53,33 +62,42 @@ func _input(event):
 		if map.checkPos(desiredPos):
 			currentPosition = desiredPos
 			self.position += Vector2(16, 0)
-			map.turn()
+			validAction = true
 			
 	if event.is_action_pressed("UpLeft"):
 		var desiredPos = [currentPosition[0]-1, currentPosition[1]-1]
 		if map.checkPos(desiredPos):
 			currentPosition = desiredPos
 			self.position += Vector2(-16, -16)
-			map.turn()
+			validAction = true
 			
 	if event.is_action_pressed("UpRight"):
 		var desiredPos = [currentPosition[0]+1, currentPosition[1]-1]
 		if map.checkPos(desiredPos):
 			currentPosition = desiredPos
 			self.position += Vector2(16, -16)
-			map.turn()
+			validAction = true
 			
 	if event.is_action_pressed("DownLeft"):
 		var desiredPos = [currentPosition[0]-1, currentPosition[1]+1]
 		if map.checkPos(desiredPos):
 			currentPosition = desiredPos
 			self.position += Vector2(-16, 16)
-			map.turn()
+			validAction = true
 			
 	if event.is_action_pressed("DownRight"):
 		var desiredPos = [currentPosition[0]+1, currentPosition[1]+1]
 		if map.checkPos(desiredPos):
 			currentPosition = desiredPos
 			self.position += Vector2(16, 16)
+			validAction = true
+	
+	# the only exception is the "stay" move which only takes 1 turn		
+	if event.is_action_pressed("Stay"):
+		map.turn()
+	
+	# when a valid action is detected, do a number of turns	
+	if validAction:
+		for i in range(0, speed):
 			map.turn()
 		

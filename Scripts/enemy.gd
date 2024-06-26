@@ -5,6 +5,10 @@ var AC
 var attack
 var defense
 
+# special stat that determines when an enemy can take an action
+# if it hits 0 the enemy can move, otherwise they must wait
+var speed
+
 var gridLocation
 
 func setGridLocation(location):
@@ -19,9 +23,18 @@ func _ready():
 	AC = 10
 	attack = 1
 	defense = 1
+	# determine an initial speed value, something between 1 to 20
+	speed = (randi() % 20) + 1
 
 
 func turn():
+	
+	# if this entity's speed is greater than 0, no action is taken
+	if speed > 0:
+		speed -= 1
+		return
+	
+	# otherwise, take an action
 	var map = self.get_parent()
 	
 	var selectedLocation = false
@@ -59,4 +72,6 @@ func turn():
 	# finally, adjust the grid location and move this enemy
 	gridLocation = desiredPos
 	self.position = Vector2(16*gridLocation[0], 16*gridLocation[1])
+	
+	speed = (randi() % 20) + 1
 				
