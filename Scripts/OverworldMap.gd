@@ -202,8 +202,30 @@ func findPath(location, curpos, visited):
 	# once each direction has been checked, return visited	
 	return visited
 		
+
+# give enemies the ability to find the player
+func isPlayerHere(location):
+	if location.hash() == player.getPosition().hash():
+		return true
 	
+	return false
 	
+
+# let player identify enemies
+func isFoeHere(location):
+	for enemy in enemies:
+		if enemy.getGridLocation().hash() == location.hash():
+			return enemy
+	
+	return null
+	
+# monster attacks player
+func attackPlayer(monster):
+	player.takeDamage(monster.attack)
+
+# player attacks monster	
+func attackFoe(monster):
+	monster.takeDamage(player.attack)
 			
 
 # let player make requests to move, check if it is valid

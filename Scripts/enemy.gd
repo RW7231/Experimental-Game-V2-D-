@@ -25,6 +25,13 @@ func _ready():
 	defense = 1
 	# determine an initial speed value, something between 1 to 20
 	speed = (randi() % 20) + 1
+	
+
+func takeDamage(amount):
+	health -= (amount * (amount/defense))
+	
+	if health <= 0:
+		queue_free()
 
 
 func turn():
@@ -48,6 +55,13 @@ func turn():
 		for j in range(-1, 2):
 			if gridLocation[0]+i >= 0 and gridLocation[0]+i <= map.getSize()-1 and gridLocation[1]+j >= 0 and gridLocation[1]+j <= map.getSize()-1:
 				validLocations.append([gridLocation[0]+i, gridLocation[1]+j])
+	
+	# once we have valid locations, check to see if the player is in one of them
+	for location in validLocations:
+		# if the player is indeed in one of the locations, do not move and instead attack
+		if map.isPlayerHere(location):
+			selectedLocation = true
+			map.attackPlayer(self)
 	
 	# now we need to help the enemy find a location to go. As of now they are blind and wander aimlessly			
 	while not selectedLocation:

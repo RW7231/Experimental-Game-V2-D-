@@ -14,6 +14,8 @@ var speed = 5
 
 var validAction
 
+var dead = false
+
 # get_parent is a bad function that barely works half the time
 # I have to run it in _process to ensure that it actually gets the map	
 func _process(_delta):
@@ -27,9 +29,20 @@ func setStartPos(value):
 	
 func getPosition():
 	return currentPosition
+	
+func takeDamage(amount):
+	health -= (amount * (amount/defense))
+	print("You have been hit!")
+	if health <= 0:
+		print("GAME OVER")
+		dead = true
 
 # we want to handle player movement in the grid system, 
 func _input(event):
+	
+	# if the player is dead, no more inputs are done
+	if dead:
+		return
 	
 	# if a valid action is taken take a number of turns equal to speed
 	validAction = false
