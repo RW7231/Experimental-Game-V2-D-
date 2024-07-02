@@ -31,6 +31,8 @@ func takeDamage(amount):
 	health -= (amount * (amount/defense))
 	
 	if health <= 0:
+		var map = self.get_parent()
+		map.destroyFoe(self)
 		queue_free()
 
 

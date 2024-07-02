@@ -226,6 +226,9 @@ func attackPlayer(monster):
 # player attacks monster	
 func attackFoe(monster):
 	monster.takeDamage(player.attack)
+	
+func destroyFoe(monster):
+	enemies.erase(monster)
 			
 
 # let player make requests to move, check if it is valid

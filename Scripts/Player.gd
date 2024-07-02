@@ -50,21 +50,45 @@ func _input(event):
 	# check the player direction, if the position is valid, move the player there
 	if event.is_action_pressed("Up"):
 		var desiredPos = [currentPosition[0], currentPosition[1]-1]
-		if map.checkPos(desiredPos):
+		
+		# check to see if there is an enemy here, if so attack without moving
+		var possibleFoe = map.isFoeHere(desiredPos)
+		if possibleFoe != null:
+			print("You attack an enemy!")
+			map.attackFoe(possibleFoe)
+			validAction = true
+		
+		elif map.checkPos(desiredPos):
 			currentPosition = desiredPos
 			self.position += Vector2(0, -16)
 			validAction = true
 		
 	if event.is_action_pressed("Down"):
 		var desiredPos = [currentPosition[0], currentPosition[1]+1]
-		if map.checkPos(desiredPos):
+		
+		# check to see if there is an enemy here, if so attack without moving
+		var possibleFoe = map.isFoeHere(desiredPos)
+		if possibleFoe != null:
+			print("You attack an enemy!")
+			map.attackFoe(possibleFoe)
+			validAction = true
+		
+		elif map.checkPos(desiredPos):
 			currentPosition = desiredPos
 			self.position += Vector2(0, 16)
 			validAction = true
 		
 	if event.is_action_pressed("Left"):
 		var desiredPos = [currentPosition[0]-1, currentPosition[1]]
-		if map.checkPos(desiredPos):
+		
+		# check to see if there is an enemy here, if so attack without moving
+		var possibleFoe = map.isFoeHere(desiredPos)
+		if possibleFoe != null:
+			print("You attack an enemy!")
+			map.attackFoe(possibleFoe)
+			validAction = true
+		
+		elif map.checkPos(desiredPos):
 			currentPosition = desiredPos
 			self.position += Vector2(-16, 0)
 			validAction = true
@@ -72,35 +96,75 @@ func _input(event):
 		
 	if event.is_action_pressed("Right"):
 		var desiredPos = [currentPosition[0] + 1, currentPosition[1]]
-		if map.checkPos(desiredPos):
+		
+		# check to see if there is an enemy here, if so attack without moving
+		var possibleFoe = map.isFoeHere(desiredPos)
+		if possibleFoe != null:
+			print("You attack an enemy!")
+			map.attackFoe(possibleFoe)
+			validAction = true
+		
+		elif map.checkPos(desiredPos):
 			currentPosition = desiredPos
 			self.position += Vector2(16, 0)
 			validAction = true
 			
 	if event.is_action_pressed("UpLeft"):
 		var desiredPos = [currentPosition[0]-1, currentPosition[1]-1]
-		if map.checkPos(desiredPos):
+		
+		# check to see if there is an enemy here, if so attack without moving
+		var possibleFoe = map.isFoeHere(desiredPos)
+		if possibleFoe != null:
+			print("You attack an enemy!")
+			map.attackFoe(possibleFoe)
+			validAction = true
+		
+		elif map.checkPos(desiredPos):
 			currentPosition = desiredPos
 			self.position += Vector2(-16, -16)
 			validAction = true
 			
 	if event.is_action_pressed("UpRight"):
 		var desiredPos = [currentPosition[0]+1, currentPosition[1]-1]
-		if map.checkPos(desiredPos):
+		
+		# check to see if there is an enemy here, if so attack without moving
+		var possibleFoe = map.isFoeHere(desiredPos)
+		if possibleFoe != null:
+			print("You attack an enemy!")
+			map.attackFoe(possibleFoe)
+			validAction = true
+		
+		elif map.checkPos(desiredPos):
 			currentPosition = desiredPos
 			self.position += Vector2(16, -16)
 			validAction = true
 			
 	if event.is_action_pressed("DownLeft"):
 		var desiredPos = [currentPosition[0]-1, currentPosition[1]+1]
-		if map.checkPos(desiredPos):
+		
+		# check to see if there is an enemy here, if so attack without moving
+		var possibleFoe = map.isFoeHere(desiredPos)
+		if possibleFoe != null:
+			print("You attack an enemy!")
+			map.attackFoe(possibleFoe)
+			validAction = true
+		
+		elif map.checkPos(desiredPos):
 			currentPosition = desiredPos
 			self.position += Vector2(-16, 16)
 			validAction = true
 			
 	if event.is_action_pressed("DownRight"):
 		var desiredPos = [currentPosition[0]+1, currentPosition[1]+1]
-		if map.checkPos(desiredPos):
+		
+		# check to see if there is an enemy here, if so attack without moving
+		var possibleFoe = map.isFoeHere(desiredPos)
+		if possibleFoe != null:
+			print("You attack an enemy!")
+			map.attackFoe(possibleFoe)
+			validAction = true
+		
+		elif map.checkPos(desiredPos):
 			currentPosition = desiredPos
 			self.position += Vector2(16, 16)
 			validAction = true
