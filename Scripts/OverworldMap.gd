@@ -9,10 +9,10 @@ var StairObject = preload("res://Prefabs/stair_placeholder.tscn")
 
 var size = 15
 
-var worldGrid
+var worldGrid = []
 
 # this variable stores the actual tiles used in the game map
-var tileGrid
+var tileGrid = []
 
 var player
 
@@ -23,6 +23,10 @@ var pathFound
 var knownValidPositions
 
 var enemies = []
+
+var difficulty = 1
+
+var exit
 
 # we can use a 2d array to create a digital representation of the world map
 func make2dArray():
@@ -111,6 +115,16 @@ func checkMap():
 				if not pathFound:
 					fixMap([i, j], [2, 2])
 					
+	placeExit()
+					
+
+func placeExit():
+	var placement = knownValidPositions[randi() % knownValidPositions.size()]
+	exit = StairObject.instantiate()
+	exit.position = Vector2(placement[0] * 16, placement[1] * 16)
+	self.add_child(exit)
+	tileGrid[placement[0]][placement[1]].queue_free()
+	tileGrid[placement[0]][placement[1]] = exit
 
 # this functionality will come soon, but should be simple
 # just go from player position to the blocked off part of the map, deleting any walls in the way	
@@ -220,6 +234,11 @@ func isFoeHere(location):
 	
 	return null
 	
+func checkForExit(location):
+	if tileGrid[location[0]][location[1]] == exit:
+		generateNewMap()
+		
+	
 # monster attacks player
 func attackPlayer(monster):
 	player.takeDamage(monster.attack)
@@ -270,19 +289,30 @@ func turn():
 
 func getSize():
 	return size
-			
-
-# Called when the node enters the scene tree for the first time.
-func _ready():
+	
+func generateNewMap():
+	for child in self.get_children():
+		child.queue_free()
+		
+	worldGrid.clear()
+	tileGrid.clear()
+	enemies.clear()
+		
 	worldGrid = make2dArray()
 	tileGrid = make2dArray()
 	player = PlayerObject.instantiate()
 	player.setStartPos(size/2)
 	
 	playerpos = player.getPosition()
-	player.position = Vector2(16*playerpos[0], 16*playerpos[1])
+	player.position = Vector2(16 * playerpos[0], 16 * playerpos[1])
 	
 	fillWorld()
+	
 	self.add_child(player)
+			
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	generateNewMap()
 	
 
