@@ -24,7 +24,7 @@ var knownValidPositions
 
 var enemies = []
 
-var difficulty = 1
+var difficulty = 0
 
 var exit
 
@@ -241,13 +241,14 @@ func checkForExit(location):
 	
 # monster attacks player
 func attackPlayer(monster):
-	player.takeDamage(monster.attack)
+	player.takeDamage(monster.attack, monster.attackBonus)
 
 # player attacks monster	
 func attackFoe(monster):
-	monster.takeDamage(player.attack)
+	monster.takeDamage(player.attack, player.attackBonus)
 	
 func destroyFoe(monster):
+	player.gainSouls(monster.soulValue)
 	enemies.erase(monster)
 			
 
@@ -291,6 +292,8 @@ func getSize():
 	return size
 	
 func generateNewMap():
+	
+	difficulty += 1
 	for child in self.get_children():
 		child.queue_free()
 		

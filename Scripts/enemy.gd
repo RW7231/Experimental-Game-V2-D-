@@ -4,6 +4,8 @@ var health
 var AC
 var attack
 var defense
+var attackBonus
+var soulValue
 
 # special stat that determines when an enemy can take an action
 # if it hits 0 the enemy can move, otherwise they must wait
@@ -19,22 +21,35 @@ func getGridLocation():
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	health = 5
+	# as the player descends into the dungeon increase enemy difficulty
+	# enemies have more health, do more danage and are more resilient
+	var worldDif = self.get_parent().difficulty
+	
+	health = 5.0 * randi_range(worldDif/2 + 1, worldDif)
 	AC = 10
-	attack = 1
-	defense = 1
+	attack = 1.0 * randi_range(worldDif/2 + 1, worldDif)
+	defense = 1.0 * randi_range(worldDif/2 + 1, worldDif)
+	attackBonus = 3 + worldDif
 	# determine an initial speed value, something between 1 to 20
 	speed = (randi() % 20) + 1
 	
+	soulValue = 100 * worldDif
+	
 
-func takeDamage(amount):
+func takeDamage(amount, bonus):
+	if (((randi() % 20) + 1) + bonus) < AC:
+		print("You missed an enemy...")
+		return
+	
 	health -= (amount * (amount/defense))
 	
+	isAlive()
+
+func isAlive():
 	if health <= 0:
 		var map = self.get_parent()
 		map.destroyFoe(self)
 		queue_free()
-
 
 func turn():
 	

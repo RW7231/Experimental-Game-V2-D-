@@ -4,11 +4,13 @@ var currentPosition = [2, 2]
 
 var map
 
-var health = 10
-var maxHealth = 10
-var attack = 1
-var defense = 1
+var health = 10.0
+var maxHealth = 10.0
+var attack = 1.0
+var defense = 1.0
 var AC = 10
+var attackBonus = 3
+var souls = 0
 
 # this is a placeholder for now, higher values means slower player
 var speed = 5
@@ -34,7 +36,11 @@ func setStartPos(value):
 func getPosition():
 	return currentPosition
 	
-func takeDamage(amount):
+func takeDamage(amount, bonus):
+	if (((randi() % 20) + 1) + bonus) < AC:
+		print("An Enemy tried to attack you but missed")
+		return
+	
 	health -= (amount * (amount/defense))
 	healthBarChange()
 	print("You have been hit!")
@@ -45,6 +51,13 @@ func takeDamage(amount):
 func healthBarChange():
 	var healthbar = get_node("CanvasLayer/HealthBar")
 	healthbar.value = health*10/maxHealth
+	
+	
+func gainSouls(amount):
+	souls += amount
+	
+func loseSouls(amount):
+	souls -= amount
 
 # we want to handle player movement in the grid system, 
 func _input(event):
