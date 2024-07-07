@@ -5,6 +5,7 @@ var GridObject = preload("res://Prefabs/grid_placeholder.tscn")
 var PlayerObject = preload("res://Prefabs/player.tscn")
 var WallObject = preload("res://Prefabs/wall.tscn")
 var EnemyObject = preload("res://Prefabs/enemy.tscn")
+var StairObject = preload("res://Prefabs/stair_placeholder.tscn")
 
 var size = 15
 
@@ -65,7 +66,7 @@ func fillWorld():
 					worldGrid[i][j] = 0
 				
 					# roll a chance to spawn an enemy as well
-					if (randi() % 100) < 10:
+					if (randi() % 100) < 5:
 						foe = EnemyObject.instantiate()
 						foe.position = Vector2(i * 16, j * 16)
 						add_child(foe)
@@ -244,6 +245,27 @@ func checkPos(desiredPos):
 func turn():
 	for enemy in enemies:
 		enemy.turn()
+	
+	# roll a chance to spawn an enemy as well, 1% per turn
+	# also, prevent spawns if number of enemies exceeds map size/2
+	if (randi() % 100) < 1 and enemies.size() < size/2:
+		print("Enemy Spawned")
+		var foe = EnemyObject.instantiate()
+		var posx
+		var posy
+		var invalid = true
+		
+		while invalid:
+			posx = randi() % size
+			posy = randi() % size
+			if worldGrid[posx][posy] == 0:
+				invalid = false
+			
+		foe.position = Vector2(posx * 16, posy * 16)
+		add_child(foe)
+		enemies.append(foe)
+		foe.setGridLocation([posx, posy])
+		
 		
 
 func getSize():
@@ -252,8 +274,6 @@ func getSize():
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	# consistent generation
-	seed(4)
 	worldGrid = make2dArray()
 	tileGrid = make2dArray()
 	player = PlayerObject.instantiate()

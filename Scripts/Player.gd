@@ -5,6 +5,7 @@ var currentPosition = [2, 2]
 var map
 
 var health = 10
+var maxHealth = 10
 var attack = 1
 var defense = 1
 var AC = 10
@@ -15,6 +16,9 @@ var speed = 5
 var validAction
 
 var dead = false
+
+func _ready():
+	healthBarChange()
 
 # get_parent is a bad function that barely works half the time
 # I have to run it in _process to ensure that it actually gets the map	
@@ -32,10 +36,15 @@ func getPosition():
 	
 func takeDamage(amount):
 	health -= (amount * (amount/defense))
+	healthBarChange()
 	print("You have been hit!")
 	if health <= 0:
 		print("GAME OVER")
 		dead = true
+		
+func healthBarChange():
+	var healthbar = get_node("CanvasLayer/HealthBar")
+	healthbar.value = health*10/maxHealth
 
 # we want to handle player movement in the grid system, 
 func _input(event):

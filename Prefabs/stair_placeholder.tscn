@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://koj0ox0q7wdw"]
+
+[ext_resource type="Texture2D" uid="uid://eoijxrvw1wwj" path="res://Assets/Stair Placeholder.png" id="1_7xi82"]
+
+[node name="StairPlaceholder" type="Sprite2D"]
+texture = ExtResource("1_7xi82")

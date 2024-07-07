@@ -13,6 +13,7 @@ config_version=5
 config/name="Experimental Game V2(d)"
 run/main_scene="res://Overworld.tscn"
 config/features=PackedStringArray("4.2", "Forward Plus")
+boot_splash/bg_color=Color(0, 0, 0, 1)
 config/icon="res://icon.svg"
 
 [input]
@@ -66,3 +67,4 @@ Stay={
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0
+environment/defaults/default_clear_color=Color(0, 0, 0, 1)

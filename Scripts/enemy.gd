@@ -69,15 +69,16 @@ func turn():
 	while not selectedLocation:
 		
 		# if there are no valid locations, just hold still this turn
-		if validLocations.is_empty():
+		if validLocations.size() == 0:
 			selectedLocation = true
+			break
 		
 		# otherwise generate a random choice from our valid locations
 		var randNum = randi() % validLocations.size()
 		
-		# check to see if there is not a wall in this position already
+		# check to see if there is not a wall or foe in this position already
 		# if nothing is there, it's a valid position and we can go there
-		if map.checkPos(validLocations[randNum]):
+		if map.checkPos(validLocations[randNum]) and not map.isFoeHere(validLocations[randNum]):
 			desiredPos = validLocations[randNum]
 			selectedLocation = true
 		
