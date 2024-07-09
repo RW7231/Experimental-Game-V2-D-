@@ -5,6 +5,5 @@
 
 [node name="Enemy" type="Sprite2D"]
 top_level = true
-z_index = 100
 texture = ExtResource("1_e4cmr")
 script = ExtResource("2_dujcw")

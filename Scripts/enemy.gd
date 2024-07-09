@@ -41,7 +41,10 @@ func takeDamage(amount, bonus):
 		print("You missed an enemy...")
 		return
 	
-	health -= (amount * (amount/defense))
+	var damage = (amount * (amount/defense))
+	
+	health -= damage
+	print("You attack an enemy and hit for ", damage)
 	
 	isAlive()
 

@@ -41,9 +41,11 @@ func takeDamage(amount, bonus):
 		print("An Enemy tried to attack you but missed")
 		return
 	
-	health -= (amount * (amount/defense))
+	var damage = (amount * (amount/defense))
+	
+	health -= damage
 	healthBarChange()
-	print("You have been hit!")
+	print("You have been hit for ", damage)
 	if health <= 0:
 		print("GAME OVER")
 		dead = true
@@ -76,7 +78,6 @@ func _input(event):
 		# check to see if there is an enemy here, if so attack without moving
 		var possibleFoe = map.isFoeHere(desiredPos)
 		if possibleFoe != null:
-			print("You attack an enemy!")
 			map.attackFoe(possibleFoe)
 			validAction = true
 		
@@ -91,7 +92,6 @@ func _input(event):
 		# check to see if there is an enemy here, if so attack without moving
 		var possibleFoe = map.isFoeHere(desiredPos)
 		if possibleFoe != null:
-			print("You attack an enemy!")
 			map.attackFoe(possibleFoe)
 			validAction = true
 		
@@ -106,7 +106,6 @@ func _input(event):
 		# check to see if there is an enemy here, if so attack without moving
 		var possibleFoe = map.isFoeHere(desiredPos)
 		if possibleFoe != null:
-			print("You attack an enemy!")
 			map.attackFoe(possibleFoe)
 			validAction = true
 		
@@ -122,7 +121,6 @@ func _input(event):
 		# check to see if there is an enemy here, if so attack without moving
 		var possibleFoe = map.isFoeHere(desiredPos)
 		if possibleFoe != null:
-			print("You attack an enemy!")
 			map.attackFoe(possibleFoe)
 			validAction = true
 		
@@ -137,7 +135,6 @@ func _input(event):
 		# check to see if there is an enemy here, if so attack without moving
 		var possibleFoe = map.isFoeHere(desiredPos)
 		if possibleFoe != null:
-			print("You attack an enemy!")
 			map.attackFoe(possibleFoe)
 			validAction = true
 		
@@ -152,7 +149,6 @@ func _input(event):
 		# check to see if there is an enemy here, if so attack without moving
 		var possibleFoe = map.isFoeHere(desiredPos)
 		if possibleFoe != null:
-			print("You attack an enemy!")
 			map.attackFoe(possibleFoe)
 			validAction = true
 		
@@ -167,7 +163,6 @@ func _input(event):
 		# check to see if there is an enemy here, if so attack without moving
 		var possibleFoe = map.isFoeHere(desiredPos)
 		if possibleFoe != null:
-			print("You attack an enemy!")
 			map.attackFoe(possibleFoe)
 			validAction = true
 		
@@ -182,7 +177,6 @@ func _input(event):
 		# check to see if there is an enemy here, if so attack without moving
 		var possibleFoe = map.isFoeHere(desiredPos)
 		if possibleFoe != null:
-			print("You attack an enemy!")
 			map.attackFoe(possibleFoe)
 			validAction = true
 		

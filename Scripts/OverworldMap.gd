@@ -56,9 +56,9 @@ func fillWorld():
 			if i != playerpos[0] or j != playerpos[1]:
 			
 				# generate a random number between 0 and 99
-				# if it is less than 10, generate a wall, otherwise generate a blank space
+				# if it is less than 50, generate a wall, otherwise generate a blank space
 				# additionally we shoud prevent a wall from spawning on a player, that would be weird
-				if (randi() % 100) < 70 and worldGrid[i][j] == 0:
+				if (randi() % 100) < 50 and worldGrid[i][j] == 0:
 					gridpiece = WallObject.instantiate()
 					tileGrid[i][j] = gridpiece
 					worldGrid[i][j] = 1
@@ -90,15 +90,17 @@ func fillWorld():
 				# add this gridpiece to the scene and array
 			add_child(gridpiece)
 			
-	
+	# once the basic map has been generated, correct any mistakes
 	checkMap()
+	
+	# place an exit so the player can go to next level
+	placeExit()
 					
 
 func checkMap():
 	# one more thing, fix up the map
 	# it isn't very fun when a player gets softlocked because the walls spawned in all directions around them
 	# in the off chance a part of the map gets blocked off, I want to recover
-	# WIP for now
 	
 	knownValidPositions = []
 	
@@ -114,8 +116,6 @@ func checkMap():
 				# if no path was found then fix the map
 				if not pathFound:
 					fixMap([i, j], [2, 2])
-					
-	placeExit()
 					
 
 func placeExit():
@@ -293,16 +293,26 @@ func getSize():
 	
 func generateNewMap():
 	
+	# start difficulty at 1 and increase for each new level
 	difficulty += 1
+	
+	# every time new level is generated, randomly determine size
+	size = randi_range(10, 20)
+	
+	# clear out all children currently in the map node
 	for child in self.get_children():
 		child.queue_free()
-		
+	
+	# clear out the arrays so we can start over	
 	worldGrid.clear()
 	tileGrid.clear()
 	enemies.clear()
-		
+	
+	# generate 2d arrays for the "physical" world and the data world	
 	worldGrid = make2dArray()
 	tileGrid = make2dArray()
+	
+	# spawn the player and put them into the game once the map is generated
 	player = PlayerObject.instantiate()
 	player.setStartPos(size/2)
 	
