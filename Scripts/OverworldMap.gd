@@ -112,10 +112,10 @@ func checkMap():
 				# start by assuming no path exists for each grid object
 				pathFound = false
 				# try to find a path
-				findPath([i, j], [2,2], [])
+				findPath([i, j], player.getPosition(), [])
 				# if no path was found then fix the map
 				if not pathFound:
-					fixMap([i, j], [2, 2])
+					fixMap([i, j], player.getPosition())
 					
 
 func placeExit():
@@ -128,28 +128,28 @@ func placeExit():
 
 # this functionality will come soon, but should be simple
 # just go from player position to the blocked off part of the map, deleting any walls in the way	
-func fixMap(location, playerpos):
+func fixMap(location, ppos):
 	print("Location ", location[0], ", ", location[1], " is invalid and must be fixed")
 	
-	if location[0] < playerpos[0]:
-		for i in range(location[0], playerpos[0]):
+	if location[0] < ppos[0]:
+		for i in range(location[0], ppos[0]):
 			var newFloor = GridObject.instantiate()
-			newFloor.position = Vector2(i*16, playerpos[1]*16)
+			newFloor.position = Vector2(i*16, ppos[1]*16)
 			self.add_child(newFloor)
-			tileGrid[i][playerpos[1]].queue_free()
-			tileGrid[i][playerpos[1]] = newFloor
-			worldGrid[i][playerpos[1]] = 0
+			tileGrid[i][ppos[1]].queue_free()
+			tileGrid[i][ppos[1]] = newFloor
+			worldGrid[i][ppos[1]] = 0
 	else:
-		for i in range(playerpos[0], location[0]):
+		for i in range(ppos[0], location[0]):
 			var newFloor = GridObject.instantiate()
-			newFloor.position = Vector2(i*16, playerpos[1]*16)
+			newFloor.position = Vector2(i*16, ppos[1]*16)
 			self.add_child(newFloor)
-			tileGrid[i][playerpos[1]].queue_free()
-			tileGrid[i][playerpos[1]] = newFloor
-			worldGrid[i][playerpos[1]] = 0
+			tileGrid[i][ppos[1]].queue_free()
+			tileGrid[i][ppos[1]] = newFloor
+			worldGrid[i][ppos[1]] = 0
 			
-	if location[1] < playerpos[1]:
-		for i in range(location[1], playerpos[1]):
+	if location[1] < ppos[1]:
+		for i in range(location[1], ppos[1]):
 			var newFloor = GridObject.instantiate()
 			newFloor.position = Vector2(location[0]*16, i*16)
 			self.add_child(newFloor)
@@ -157,7 +157,7 @@ func fixMap(location, playerpos):
 			tileGrid[location[0]][i] = newFloor
 			worldGrid[location[0]][i] = 0
 	else:
-		for i in range(playerpos[1], location[1]):
+		for i in range(ppos[1], location[1]):
 			var newFloor = GridObject.instantiate()
 			newFloor.position = Vector2(location[0]*16, i*16)
 			self.add_child(newFloor)
