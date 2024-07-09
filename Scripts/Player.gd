@@ -20,6 +20,7 @@ var validAction
 var dead = false
 
 func _ready():
+	Load()
 	healthBarChange()
 
 # get_parent is a bad function that barely works half the time
@@ -29,6 +30,37 @@ func _process(_delta):
 		map = self.get_parent()
 	else:
 		set_process(false)
+		
+func Save():
+	var baseData = {"health": health}
+	
+	var saveData = JSON.new().stringify(baseData)
+	
+	var file = FileAccess.open("res://save.json", FileAccess.WRITE)
+	
+	file.store_line(saveData)
+	
+	file.close()
+		
+		
+func Load():
+	var file = FileAccess.open("res://save.json", FileAccess.READ)
+	
+	if file == null:
+		Save()
+		return null
+	
+	var content = JSON.new().parse_string(file.get_as_text())
+	
+	health = content["health"]
+	
+	file.close()
+	return content
+	
+func eraseSave():
+	DirAccess.remove_absolute("res://save.json")
+	
+	
 		
 func setStartPos(value):
 	currentPosition = [value, value]
@@ -46,7 +78,11 @@ func takeDamage(amount, bonus):
 	health -= damage
 	healthBarChange()
 	print("You have been hit for ", damage)
+	
+	Save()
+	
 	if health <= 0:
+		eraseSave()
 		print("GAME OVER")
 		dead = true
 		

@@ -8,6 +8,7 @@ A new version of an old project. This version of the game is developed in Godot.
 - Player can fight foes in a standard rogue style by walking into them
 - Escalating difficulty
 - Random map generation
+- Simple Placeholder Save system
 
 ## Planned Features
 - Leveling System
