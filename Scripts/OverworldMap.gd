@@ -28,6 +28,8 @@ var difficulty = 0
 
 var exit
 
+var SaveAllowed = true
+
 # we can use a 2d array to create a digital representation of the world map
 func make2dArray():
 	# start with an empty array, and make it 2d
@@ -328,7 +330,13 @@ func generateNewMap():
 	
 	saveMapData()
 	
+func noSaveAllowed():
+	SaveAllowed = false
+	
 func saveMapData():
+	
+	if not SaveAllowed:
+		return
 	
 	# save all enemy positions and stats
 	var enemyData = []

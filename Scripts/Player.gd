@@ -32,6 +32,10 @@ func _process(_delta):
 		set_process(false)
 		
 func Save():
+	
+	if dead:
+		return
+	
 	var baseData = {"health": health, "position": currentPosition}
 	
 	var saveData = JSON.stringify(baseData)
@@ -63,6 +67,7 @@ func Load():
 func eraseSave():
 	DirAccess.remove_absolute("res://save.json")
 	DirAccess.remove_absolute("res://mapData.json")
+	map.noSaveAllowed()
 	
 	
 		
