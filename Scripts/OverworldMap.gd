@@ -412,9 +412,6 @@ func loadMapData():
 	#player.position = Vector2(16 * playerpos[0], 16 * playerpos[1])
 	
 	file.close()
-	
-func newPlayer():
-	player.setStartPos(size/2)
 		
 
 # Called when the node enters the scene tree for the first time.
