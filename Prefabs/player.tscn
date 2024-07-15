@@ -14,6 +14,7 @@ func update():
 "
 
 [node name="Player" type="Sprite2D"]
+z_index = 1000
 texture = ExtResource("1_0wl2c")
 script = ExtResource("2_2kwm5")
 

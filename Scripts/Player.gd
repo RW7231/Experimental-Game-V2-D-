@@ -32,7 +32,7 @@ func _process(_delta):
 		set_process(false)
 		
 func Save():
-	var baseData = {"health": health}
+	var baseData = {"health": health, "position": currentPosition}
 	
 	var saveData = JSON.new().stringify(baseData)
 	
@@ -53,17 +53,20 @@ func Load():
 	var content = JSON.new().parse_string(file.get_as_text())
 	
 	health = content["health"]
+	currentPosition = content["position"]
 	
 	file.close()
 	return content
 	
 func eraseSave():
 	DirAccess.remove_absolute("res://save.json")
+	DirAccess.remove_absolute("res://mapData.json")
 	
 	
 		
 func setStartPos(value):
 	currentPosition = [value, value]
+	Save()
 	
 func getPosition():
 	return currentPosition
@@ -116,11 +119,13 @@ func _input(event):
 		if possibleFoe != null:
 			map.attackFoe(possibleFoe)
 			validAction = true
+			Save()
 		
 		elif map.checkPos(desiredPos):
 			currentPosition = desiredPos
 			self.position += Vector2(0, -16)
 			validAction = true
+			Save()
 		
 	if event.is_action_pressed("Down"):
 		var desiredPos = [currentPosition[0], currentPosition[1]+1]
@@ -130,11 +135,13 @@ func _input(event):
 		if possibleFoe != null:
 			map.attackFoe(possibleFoe)
 			validAction = true
+			Save()
 		
 		elif map.checkPos(desiredPos):
 			currentPosition = desiredPos
 			self.position += Vector2(0, 16)
 			validAction = true
+			Save()
 		
 	if event.is_action_pressed("Left"):
 		var desiredPos = [currentPosition[0]-1, currentPosition[1]]
@@ -144,11 +151,13 @@ func _input(event):
 		if possibleFoe != null:
 			map.attackFoe(possibleFoe)
 			validAction = true
+			Save()
 		
 		elif map.checkPos(desiredPos):
 			currentPosition = desiredPos
 			self.position += Vector2(-16, 0)
 			validAction = true
+			Save()
 		
 		
 	if event.is_action_pressed("Right"):
@@ -159,11 +168,13 @@ func _input(event):
 		if possibleFoe != null:
 			map.attackFoe(possibleFoe)
 			validAction = true
+			Save()
 		
 		elif map.checkPos(desiredPos):
 			currentPosition = desiredPos
 			self.position += Vector2(16, 0)
 			validAction = true
+			Save()
 			
 	if event.is_action_pressed("UpLeft"):
 		var desiredPos = [currentPosition[0]-1, currentPosition[1]-1]
@@ -173,11 +184,13 @@ func _input(event):
 		if possibleFoe != null:
 			map.attackFoe(possibleFoe)
 			validAction = true
+			Save()
 		
 		elif map.checkPos(desiredPos):
 			currentPosition = desiredPos
 			self.position += Vector2(-16, -16)
 			validAction = true
+			Save()
 			
 	if event.is_action_pressed("UpRight"):
 		var desiredPos = [currentPosition[0]+1, currentPosition[1]-1]
@@ -187,11 +200,13 @@ func _input(event):
 		if possibleFoe != null:
 			map.attackFoe(possibleFoe)
 			validAction = true
+			Save()
 		
 		elif map.checkPos(desiredPos):
 			currentPosition = desiredPos
 			self.position += Vector2(16, -16)
 			validAction = true
+			Save()
 			
 	if event.is_action_pressed("DownLeft"):
 		var desiredPos = [currentPosition[0]-1, currentPosition[1]+1]
@@ -201,11 +216,13 @@ func _input(event):
 		if possibleFoe != null:
 			map.attackFoe(possibleFoe)
 			validAction = true
+			Save()
 		
 		elif map.checkPos(desiredPos):
 			currentPosition = desiredPos
 			self.position += Vector2(-16, 16)
 			validAction = true
+			Save()
 			
 	if event.is_action_pressed("DownRight"):
 		var desiredPos = [currentPosition[0]+1, currentPosition[1]+1]
@@ -215,11 +232,13 @@ func _input(event):
 		if possibleFoe != null:
 			map.attackFoe(possibleFoe)
 			validAction = true
+			Save()
 		
 		elif map.checkPos(desiredPos):
 			currentPosition = desiredPos
 			self.position += Vector2(16, 16)
 			validAction = true
+			Save()
 	
 	# the only exception is the "stay" move which only takes 1 turn		
 	if event.is_action_pressed("Stay"):

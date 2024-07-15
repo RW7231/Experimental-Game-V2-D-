@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Experimental Game V2(d)"
-run/main_scene="res://Overworld.tscn"
+run/main_scene="res://Prefabs/Overworld.tscn"
 config/features=PackedStringArray("4.2", "Forward Plus")
 boot_splash/bg_color=Color(0, 0, 0, 1)
 config/icon="res://icon.svg"

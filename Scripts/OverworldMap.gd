@@ -125,6 +125,8 @@ func placeExit():
 	self.add_child(exit)
 	tileGrid[placement[0]][placement[1]].queue_free()
 	tileGrid[placement[0]][placement[1]] = exit
+	
+	worldGrid[placement[0]][placement[1]] = 2
 
 # this functionality will come soon, but should be simple
 # just go from player position to the blocked off part of the map, deleting any walls in the way	
@@ -220,7 +222,7 @@ func findPath(location, curpos, visited):
 
 # give enemies the ability to find the player
 func isPlayerHere(location):
-	if location.hash() == player.getPosition().hash():
+	if location[0] == player.getPosition()[0] and location[1] == player.getPosition()[1]:
 		return true
 	
 	return false
@@ -229,13 +231,13 @@ func isPlayerHere(location):
 # let player identify enemies
 func isFoeHere(location):
 	for enemy in enemies:
-		if enemy.getGridLocation().hash() == location.hash():
+		if enemy.getGridLocation()[0] == location[0] and enemy.getGridLocation()[1] == location[1]:
 			return enemy
 	
 	return null
 	
 func checkForExit(location):
-	if tileGrid[location[0]][location[1]] == exit:
+	if worldGrid[location[0]][location[1]] == 2:
 		generateNewMap()
 		
 	
@@ -259,7 +261,7 @@ func checkPos(desiredPos):
 		return false
 	
 	# if the position is not a blank space (enemy, wall, etc) deny it
-	return worldGrid[desiredPos[0]][desiredPos[1]] == 0
+	return (worldGrid[desiredPos[0]][desiredPos[1]] == 0 or worldGrid[desiredPos[0]][desiredPos[1]] == 2)
 
 # the player has taken an action, now every other entity can have a turn	
 func turn():
@@ -314,6 +316,8 @@ func generateNewMap():
 	
 	# spawn the player and put them into the game once the map is generated
 	player = PlayerObject.instantiate()
+	self.add_child(player)
+	
 	player.setStartPos(size/2)
 	
 	playerpos = player.getPosition()
@@ -321,11 +325,73 @@ func generateNewMap():
 	
 	fillWorld()
 	
+	saveMapData()
+	
+func saveMapData():
+	var baseData = {"worldGrid": worldGrid, "difficulty": difficulty}
+	
+	var saveData = JSON.new().stringify(baseData)
+	
+	var file = FileAccess.open("res://mapData.json", FileAccess.WRITE)
+	
+	file.store_line(saveData)
+	
+	file.close()
+		
+		
+func loadMapData():
+	var file = FileAccess.open("res://mapData.json", FileAccess.READ)
+	
+	if file == null:
+		generateNewMap()
+		return
+	
+	var content = JSON.new().parse_string(file.get_as_text())
+	
+	worldGrid = content["worldGrid"]
+	difficulty = content["difficulty"]
+	
+	size = worldGrid.size()
+	
+	tileGrid = make2dArray()
+	
+	var wall
+	var floor
+	var exit
+	
+	for i in size:
+		for j in size:
+			if worldGrid[i][j] == 1:
+				wall = WallObject.instantiate()
+				wall.position = Vector2(i*16, j*16)
+				tileGrid[i][j] = wall
+				self.add_child(wall)
+			elif worldGrid[i][j] == 2:
+				exit = StairObject.instantiate()
+				exit.position = Vector2(i*16, j*16)
+				tileGrid[i][j] = exit
+				self.add_child(exit)
+			else:
+				floor = GridObject.instantiate()
+				floor.position = Vector2(i*16, j*16)
+				tileGrid[i][j] = floor
+				self.add_child(floor)
+				
+	player = PlayerObject.instantiate()
+	
 	self.add_child(player)
-			
+				
+	playerpos = player.getPosition()
+	player.position = Vector2(16 * playerpos[0], 16 * playerpos[1])
+	
+	file.close()
+	
+func newPlayer():
+	player.setStartPos(size/2)
+		
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	generateNewMap()
+	loadMapData()
 	
 
