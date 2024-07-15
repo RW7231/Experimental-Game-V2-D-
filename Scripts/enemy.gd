@@ -15,9 +15,25 @@ var gridLocation
 
 func setGridLocation(location):
 	gridLocation = location
+	self.position = Vector2(16 * location[0], 16 * location[1])
 	
 func getGridLocation():
 	return gridLocation
+	
+func getStats():
+	return [health, AC, attack, defense, attackBonus, gridLocation, soulValue]
+
+# when we take data from the map data, call this function for each spawned enemy	
+func generateFromSave(stats):
+	health = stats[0]
+	AC = stats[1]
+	attack = stats[2]
+	defense = stats[3]
+	attackBonus = stats[4]
+	gridLocation = stats[5]
+	soulValue = stats[6]
+	
+	self.position = Vector2(16 * gridLocation[0], 16 * gridLocation[1])
 
 # Called when the node enters the scene tree for the first time.
 func _ready():

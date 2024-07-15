@@ -34,7 +34,7 @@ func _process(_delta):
 func Save():
 	var baseData = {"health": health, "position": currentPosition}
 	
-	var saveData = JSON.new().stringify(baseData)
+	var saveData = JSON.stringify(baseData)
 	
 	var file = FileAccess.open("res://save.json", FileAccess.WRITE)
 	
@@ -50,10 +50,12 @@ func Load():
 		Save()
 		return null
 	
-	var content = JSON.new().parse_string(file.get_as_text())
+	var content = JSON.parse_string(file.get_as_text())
 	
 	health = content["health"]
 	currentPosition = content["position"]
+	
+	self.position = Vector2(16 * currentPosition[0], 16 * currentPosition[1])
 	
 	file.close()
 	return content
@@ -66,6 +68,7 @@ func eraseSave():
 		
 func setStartPos(value):
 	currentPosition = [value, value]
+	self.position = Vector2(value * 16, value * 16)
 	Save()
 	
 func getPosition():

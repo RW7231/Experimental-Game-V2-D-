@@ -94,8 +94,7 @@ func fillWorld():
 	checkMap()
 	
 	# place an exit so the player can go to next level
-	placeExit()
-					
+	placeExit()			
 
 func checkMap():
 	# one more thing, fix up the map
@@ -287,6 +286,8 @@ func turn():
 		add_child(foe)
 		enemies.append(foe)
 		foe.setGridLocation([posx, posy])
+	
+	saveMapData()
 		
 		
 
@@ -321,17 +322,28 @@ func generateNewMap():
 	player.setStartPos(size/2)
 	
 	playerpos = player.getPosition()
-	player.position = Vector2(16 * playerpos[0], 16 * playerpos[1])
+	#player.position = Vector2(16 * playerpos[0], 16 * playerpos[1])
 	
 	fillWorld()
 	
 	saveMapData()
 	
 func saveMapData():
-	var baseData = {"worldGrid": worldGrid, "difficulty": difficulty}
 	
-	var saveData = JSON.new().stringify(baseData)
+	# save all enemy positions and stats
+	var enemyData = []
 	
+	# we need to convert the enemy stats into something usable
+	for enemy in enemies:
+		enemyData.append(enemy.getStats())
+	
+	# save all needed data into a dictionary
+	var baseData = {"worldGrid": worldGrid, "difficulty": difficulty, "enemies": enemyData}
+	
+	# save it as a JSON entry
+	var saveData = JSON.stringify(baseData)
+	
+	# write data to JSON file
 	var file = FileAccess.open("res://mapData.json", FileAccess.WRITE)
 	
 	file.store_line(saveData)
@@ -346,18 +358,18 @@ func loadMapData():
 		generateNewMap()
 		return
 	
-	var content = JSON.new().parse_string(file.get_as_text())
+	var content = JSON.parse_string(file.get_as_text())
 	
 	worldGrid = content["worldGrid"]
 	difficulty = content["difficulty"]
+	var enemyData = content["enemies"]
 	
 	size = worldGrid.size()
 	
 	tileGrid = make2dArray()
 	
 	var wall
-	var floor
-	var exit
+	var floorTile
 	
 	for i in size:
 		for j in size:
@@ -372,17 +384,24 @@ func loadMapData():
 				tileGrid[i][j] = exit
 				self.add_child(exit)
 			else:
-				floor = GridObject.instantiate()
-				floor.position = Vector2(i*16, j*16)
-				tileGrid[i][j] = floor
-				self.add_child(floor)
+				floorTile = GridObject.instantiate()
+				floorTile.position = Vector2(i*16, j*16)
+				tileGrid[i][j] = floorTile
+				self.add_child(floorTile)
+				
+	
+	for data in enemyData:
+		var enemy = EnemyObject.instantiate()
+		self.add_child(enemy)
+		enemy.generateFromSave(data)
+		enemies.append(enemy)
 				
 	player = PlayerObject.instantiate()
 	
 	self.add_child(player)
 				
 	playerpos = player.getPosition()
-	player.position = Vector2(16 * playerpos[0], 16 * playerpos[1])
+	#player.position = Vector2(16 * playerpos[0], 16 * playerpos[1])
 	
 	file.close()
 	
