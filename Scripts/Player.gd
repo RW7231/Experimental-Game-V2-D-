@@ -4,22 +4,36 @@ var currentPosition = [2, 2]
 
 var map
 
-var health = 10.0
-var maxHealth = 10.0
-var attack = 1.0
-var defense = 1.0
-var AC = 10
-var attackBonus = 3
+var level = 1
+var vigor = 10
+var str = 10
+var dex = 10
+var intelligence = 10
+var faith = 10
+
+var strBonus
+var dexBonus
+var intBonus
+var faithBonus
+
+var health
+var maxHealth
+
+var attack
+var defense
+var AC
+var attackBonus
 var souls = 0
 
 # this is a placeholder for now, higher values means slower player
-var speed = 5
+var speed
 
 var validAction
 
 var dead = false
+var recalcHealth = false
 
-func _ready():
+func _ready():		
 	Load()
 	healthBarChange()
 
@@ -36,7 +50,7 @@ func Save():
 	if dead:
 		return
 	
-	var baseData = {"health": health, "position": currentPosition}
+	var baseData = {"health": health, "position": currentPosition, "stats": [vigor, str, dex, intelligence, faith]}
 	
 	var saveData = JSON.stringify(baseData)
 	
@@ -52,17 +66,61 @@ func Load():
 	
 	if file == null:
 		Save()
+		recalcHealth = true
+		playerSetup()
 		return null
 	
 	var content = JSON.parse_string(file.get_as_text())
 	
 	health = content["health"]
 	currentPosition = content["position"]
+	var stats = content["stats"]
+	
+	vigor = stats[0]
+	str = stats[1]
+	dex = stats[2]
+	intelligence = stats[3]
+	faith = stats[4]
 	
 	self.position = Vector2(16 * currentPosition[0], 16 * currentPosition[1])
 	
 	file.close()
+	playerSetup()
 	return content
+	
+func playerSetup():
+	# determine health, it is a complex polynomial problem
+	# it focuses on the player being able to have more health early to a softcap of 40
+	maxHealth = (level*2) + 100
+	for i in vigor:
+		maxHealth += 25 - (pow((i-40), 2)/150)
+	
+	maxHealth = int(maxHealth)
+	
+	if recalcHealth:
+		health = maxHealth
+		recalcHealth = false
+	
+	# the player's bonuses are based on stats
+	# these bonuses will scale from 0 to 1, reaching 0.8 at about 40 and 1 at 100
+	strBonus = (log(str)/log(10))/2
+	dexBonus = (log(dex)/log(10))/2
+	intBonus = (log(intelligence)/log(10))/2
+	faithBonus = (log(faith)/log(10))/2
+	
+	# this will be the attack for the player's fists since no weapons exist
+	attack = int(10 + (10*strBonus) + (10*strBonus))
+	
+	attackBonus = int(str/10 + dex/10)
+	
+	defense = 3 * str
+	
+	AC = 10 + int(dex/10)
+	
+	speed = 5 - int(dex/10)
+	
+	if speed < 1:
+		speed = 1
 	
 func eraseSave():
 	DirAccess.remove_absolute("res://save.json")
@@ -84,7 +142,7 @@ func takeDamage(amount, bonus):
 		print("An Enemy tried to attack you but missed")
 		return
 	
-	var damage = (amount * (amount/defense))
+	var damage = int(amount * (amount/defense))
 	
 	health -= damage
 	healthBarChange()
