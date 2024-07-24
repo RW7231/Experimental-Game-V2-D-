@@ -6,6 +6,7 @@ var PlayerObject = preload("res://Prefabs/player.tscn")
 var WallObject = preload("res://Prefabs/wall.tscn")
 var EnemyObject = preload("res://Prefabs/enemy.tscn")
 var StairObject = preload("res://Prefabs/stair_placeholder.tscn")
+var BonfireObject = preload("res://Prefabs/bonfire.tscn")
 
 var size = 15
 
@@ -27,6 +28,7 @@ var enemies = []
 var difficulty = 0
 
 var exit
+var bonfire
 
 var SaveAllowed = true
 
@@ -96,7 +98,8 @@ func fillWorld():
 	checkMap()
 	
 	# place an exit so the player can go to next level
-	placeExit()			
+	placeExit()
+	placeBonfire()			
 
 func checkMap():
 	# one more thing, fix up the map
@@ -121,6 +124,7 @@ func checkMap():
 
 func placeExit():
 	var placement = knownValidPositions[randi() % knownValidPositions.size()]
+	knownValidPositions.erase(placement)
 	exit = StairObject.instantiate()
 	exit.position = Vector2(placement[0] * 16, placement[1] * 16)
 	self.add_child(exit)
@@ -128,6 +132,19 @@ func placeExit():
 	tileGrid[placement[0]][placement[1]] = exit
 	
 	worldGrid[placement[0]][placement[1]] = 2
+	
+func placeBonfire():
+	var placement = knownValidPositions[randi() % knownValidPositions.size()]
+	knownValidPositions.erase(placement)
+	bonfire = BonfireObject.instantiate()
+	bonfire.position = Vector2(placement[0]*16, placement[1] * 16)
+	self.add_child(bonfire)
+	tileGrid[placement[0]][placement[1]].queue_free()
+	tileGrid[placement[0]][placement[1]] = bonfire
+	
+	worldGrid[placement[0]][placement[1]] = 3
+	
+	
 
 # this functionality will come soon, but should be simple
 # just go from player position to the blocked off part of the map, deleting any walls in the way	
@@ -202,7 +219,7 @@ func findPath(location, curpos, visited):
 				# check to make sure this direction is in our world
 				if curpos[0]+i >= 0 and curpos[0]+i <= size-1 and curpos[1]+j >= 0 and curpos[1]+j <= size-1:
 					# if it is, check to see if it is a blank space (a floor space) or an enemy and has not already been visited
-					if worldGrid[curpos[0]+i][curpos[1]+j] == 0 and not visited.has([curpos[0]+i, curpos[1]+j]):
+					if worldGrid[curpos[0]+i][curpos[1]+j] != 1 and not visited.has([curpos[0]+i, curpos[1]+j]):
 						# if all checks pass, add it to places to visit
 						dirstoVisit.append([curpos[0]+i, curpos[1]+j])
 	
@@ -241,6 +258,9 @@ func checkForExit(location):
 	if worldGrid[location[0]][location[1]] == 2:
 		generateNewMap()
 		
+func checkForBonfire(location):
+	return worldGrid[location[0]][location[1]] == 3
+		
 	
 # monster attacks player
 func attackPlayer(monster):
@@ -262,7 +282,7 @@ func checkPos(desiredPos):
 		return false
 	
 	# if the position is not a blank space (enemy, wall, etc) deny it
-	return (worldGrid[desiredPos[0]][desiredPos[1]] == 0 or worldGrid[desiredPos[0]][desiredPos[1]] == 2)
+	return (worldGrid[desiredPos[0]][desiredPos[1]] != 1 or worldGrid[desiredPos[0]][desiredPos[1]] == 2)
 
 # the player has taken an action, now every other entity can have a turn	
 func turn():
@@ -391,6 +411,11 @@ func loadMapData():
 				exit.position = Vector2(i*16, j*16)
 				tileGrid[i][j] = exit
 				self.add_child(exit)
+			elif worldGrid[i][j] == 3:
+				bonfire = BonfireObject.instantiate()
+				bonfire.position = Vector2(i * 16, j * 16)
+				tileGrid[i][j] = bonfire
+				self.add_child(bonfire)
 			else:
 				floorTile = GridObject.instantiate()
 				floorTile.position = Vector2(i*16, j*16)

@@ -1,0 +1,64 @@
+[gd_scene load_steps=5 format=3 uid="uid://dnqspipb4wydw"]
+
+[ext_resource type="Texture2D" uid="uid://ddfhrso22j6ou" path="res://Assets/Background.png" id="1_k62ho"]
+[ext_resource type="Script" path="res://Prefabs/levelup_menu.gd" id="1_wkjal"]
+[ext_resource type="Texture2D" uid="uid://jytuldb0w1s4" path="res://Assets/Close.png" id="2_6r4om"]
+[ext_resource type="Script" path="res://Scripts/Close.gd" id="3_sw0wk"]
+
+[node name="LevelupMenu" type="VBoxContainer"]
+custom_minimum_size = Vector2(100, 100)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -223.5
+offset_top = -105.0
+offset_right = 238.5
+offset_bottom = 120.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+script = ExtResource("1_wkjal")
+
+[node name="Background" type="Sprite2D" parent="."]
+scale = Vector2(29, 16)
+texture = ExtResource("1_k62ho")
+centered = false
+offset = Vector2(0, -2)
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+text = "You have made it to a rest point and can upgrade your stats"
+horizontal_alignment = 1
+
+[node name="SoulCost" type="Label" parent="."]
+layout_mode = 2
+text = "Cost to level up: "
+horizontal_alignment = 1
+
+[node name="VigorLevel" type="Button" parent="."]
+layout_mode = 2
+text = "Vigor"
+
+[node name="StrLevel" type="Button" parent="."]
+layout_mode = 2
+text = "Strength"
+
+[node name="DexLevel" type="Button" parent="."]
+layout_mode = 2
+text = "Dexterity"
+
+[node name="IntLevel" type="Button" parent="."]
+layout_mode = 2
+text = "Intelligence"
+
+[node name="FaithLevel" type="Button" parent="."]
+layout_mode = 2
+text = "Faith"
+
+[node name="Close" type="Sprite2D" parent="."]
+position = Vector2(440, -20)
+texture = ExtResource("2_6r4om")
+centered = false
+script = ExtResource("3_sw0wk")

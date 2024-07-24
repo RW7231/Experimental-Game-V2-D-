@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://dylktnr6f68em"]
+
+[ext_resource type="Texture2D" uid="uid://cibwdi6waf4yx" path="res://Assets/Bonfire.png" id="1_x3eh7"]
+
+[node name="Bonfire" type="Sprite2D"]
+position = Vector2(-23.1983, -3)
+texture = ExtResource("1_x3eh7")

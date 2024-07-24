@@ -35,13 +35,18 @@ offset_right = 136.0
 offset_bottom = 39.0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
-max_value = 10.0
 step = 1.0
 show_percentage = false
 script = SubResource("GDScript_g73l1")
 
 [node name="Soul Counter" type="RichTextLabel" parent="CanvasLayer"]
-offset_left = 952.0
-offset_top = 593.0
-offset_right = 1137.0
-offset_bottom = 633.0
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -185.0
+offset_top = -40.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "Testing"

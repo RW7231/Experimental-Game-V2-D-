@@ -1,29 +1,36 @@
 extends Node2D
 
+var levelUpMenu = load("res://Prefabs/levelup_menu.tscn")
+
 var currentPosition = [2, 2]
 
 var map
 
+# player base stats
 var level = 1
 var vigor = 10
-var str = 10
+var strength = 10
 var dex = 10
 var intelligence = 10
 var faith = 10
 
+# player attack bonuses
 var strBonus
 var dexBonus
 var intBonus
 var faithBonus
 
+# player health
 var health
 var maxHealth
 
+# extra player stats
 var attack
 var defense
 var AC
 var attackBonus
 var souls = 0
+var requiredSouls = 0
 
 # this is a placeholder for now, higher values means slower player
 var speed
@@ -32,10 +39,12 @@ var validAction
 
 var dead = false
 var recalcHealth = false
+var menuOpen = false
 
 func _ready():		
 	Load()
 	healthBarChange()
+	changeSouls()
 
 # get_parent is a bad function that barely works half the time
 # I have to run it in _process to ensure that it actually gets the map	
@@ -47,11 +56,14 @@ func _process(_delta):
 		
 func Save():
 	
+	# this is a little catch to ensure that once the player is dead, their save stays deleted
 	if dead:
 		return
 	
-	var baseData = {"health": health, "position": currentPosition, "stats": [vigor, str, dex, intelligence, faith]}
+	# we want to save the player's current health, their position in the map, their stats, and their soul count
+	var baseData = {"health": health, "position": currentPosition, "level": level, "stats": [vigor, strength, dex, intelligence, faith], "souls": souls}
 	
+	# convert this into a valid JSON object and save
 	var saveData = JSON.stringify(baseData)
 	
 	var file = FileAccess.open("res://save.json", FileAccess.WRITE)
@@ -65,6 +77,7 @@ func Load():
 	var file = FileAccess.open("res://save.json", FileAccess.READ)
 	
 	if file == null:
+		# if there is no save then we must make one
 		Save()
 		recalcHealth = true
 		playerSetup()
@@ -75,9 +88,11 @@ func Load():
 	health = content["health"]
 	currentPosition = content["position"]
 	var stats = content["stats"]
+	souls = content["souls"]
+	level = content["level"]
 	
 	vigor = stats[0]
-	str = stats[1]
+	strength = stats[1]
 	dex = stats[2]
 	intelligence = stats[3]
 	faith = stats[4]
@@ -97,13 +112,14 @@ func playerSetup():
 	
 	maxHealth = int(maxHealth)
 	
+	# if there is a need to recalculate health either through a level up or new save, set health to maxHealth
 	if recalcHealth:
 		health = maxHealth
 		recalcHealth = false
 	
 	# the player's bonuses are based on stats
 	# these bonuses will scale from 0 to 1, reaching 0.8 at about 40 and 1 at 100
-	strBonus = (log(str)/log(10))/2
+	strBonus = (log(strength)/log(10))/2
 	dexBonus = (log(dex)/log(10))/2
 	intBonus = (log(intelligence)/log(10))/2
 	faithBonus = (log(faith)/log(10))/2
@@ -111,32 +127,41 @@ func playerSetup():
 	# this will be the attack for the player's fists since no weapons exist
 	attack = int(10 + (10*strBonus) + (10*strBonus))
 	
-	attackBonus = int(str/10 + dex/10)
+	# this increases the player's chance to hit, every 10 levels in str or dex increases this by 1
+	attackBonus = int(strength/10 + dex/10)
 	
-	defense = 3 * str
+	defense = 3 * strength
 	
+	# very similar to DND, increase AC with dexterity
 	AC = 10 + int(dex/10)
 	
+	# at 40 dex or higher the player will always move at their top speed
 	speed = 5 - int(dex/10)
 	
 	if speed < 1:
 		speed = 1
-	
+		
+	requiredSouls = int((pow(level, 3)/50) + (3 * pow(level, 2)) + (50 * level))
+	Save()
+
+# when the player dies, erase save and map data	
 func eraseSave():
 	DirAccess.remove_absolute("res://save.json")
 	DirAccess.remove_absolute("res://mapData.json")
 	map.noSaveAllowed()
 	
 	
-		
+# when a map is created, we must set the player's starting position		
 func setStartPos(value):
 	currentPosition = [value, value]
 	self.position = Vector2(value * 16, value * 16)
 	Save()
-	
+
+# return the player's current position	
 func getPosition():
 	return currentPosition
-	
+
+# when a monster attacks, roll to see if the player is hit first, then take damage	
 func takeDamage(amount, bonus):
 	if (((randi() % 20) + 1) + bonus) < AC:
 		print("An Enemy tried to attack you but missed")
@@ -154,23 +179,71 @@ func takeDamage(amount, bonus):
 		eraseSave()
 		print("GAME OVER")
 		dead = true
-		
+
+# change the healthbar		
 func healthBarChange():
 	var healthbar = get_node("CanvasLayer/HealthBar")
-	healthbar.value = health*10/maxHealth
+	healthbar.value = health*100/maxHealth
+	
+func changeSouls():
+	var soulCounter = get_node("CanvasLayer/Soul Counter")
+	soulCounter.text = str(souls)
 	
 	
 func gainSouls(amount):
 	souls += amount
+	changeSouls()
 	
 func loseSouls(amount):
 	souls -= amount
+	changeSouls()
+	
+func soulCheck():
+	return souls >= requiredSouls
+	
+func bonfire():
+	if map.checkForBonfire(currentPosition):
+		health = maxHealth
+		menuOpen = true
+		var canvas = get_node("CanvasLayer")
+		var levelUp = levelUpMenu.instantiate()
+		canvas.add_child(levelUp)
+		
+		updateCost()
+		
+func updateCost():
+	var menuCost = get_node("CanvasLayer/LevelupMenu/SoulCost")
+	menuCost.text = str("Cost to level up: ", requiredSouls)
+		
+func gainLevel(stat):
+	if not soulCheck():
+		return
+		
+	level += 1
+	
+	match stat:
+		1:
+			vigor += 1
+			recalcHealth = true
+		2:
+			strength += 1
+		3:
+			dex += 1
+		4:
+			intelligence += 1
+		5:
+			faith += 1
+	
+	loseSouls(requiredSouls)
+	playerSetup()
+	updateCost()
+		
 
 # we want to handle player movement in the grid system, 
 func _input(event):
 	
-	# if the player is dead, no more inputs are done
-	if dead:
+	# if the player is dead or a menu is open, no more inputs are done
+	if dead or menuOpen:
 		return
 	
 	# if a valid action is taken take a number of turns equal to speed
@@ -310,6 +383,7 @@ func _input(event):
 	if event.is_action_pressed("Stay"):
 		map.turn()
 		map.checkForExit(currentPosition)
+		bonfire()
 	
 	# when a valid action is detected, do a number of turns	
 	if validAction:
