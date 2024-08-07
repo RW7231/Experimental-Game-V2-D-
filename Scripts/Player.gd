@@ -211,6 +211,8 @@ func bonfire():
 		
 		updateCost()
 		
+		healthBarChange()
+		
 func updateCost():
 	var menuCost = get_node("CanvasLayer/LevelupMenu/SoulCost")
 	menuCost.text = str("Cost to level up: ", requiredSouls)
@@ -382,8 +384,8 @@ func _input(event):
 	# the only exception is the "stay" move which only takes 1 turn		
 	if event.is_action_pressed("Stay"):
 		map.turn()
-		map.checkForExit(currentPosition)
 		bonfire()
+		map.checkForExit(currentPosition)
 	
 	# when a valid action is detected, do a number of turns	
 	if validAction:
