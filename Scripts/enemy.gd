@@ -41,6 +41,37 @@ func _ready():
 	# enemies have more health, do more danage and are more resilient
 	var worldDif = self.get_parent().difficulty
 	
+	# gather the data of all enemies, data will be an array for each enemy
+	# it contains the difficulty and the enemy's stats
+	var EnemyData = FileAccess.open("res://EnemyData.json", FileAccess.READ)
+	EnemyData = JSON.parse_string(EnemyData.get_as_text())
+	
+	var possibleEnemies = []
+	
+	# when an enemy is generated select its stats from the provided data
+	# only an enemy with a difficulty rating lower or equal than the world difficulty can spawn
+	for key in EnemyData:
+		var enemy = EnemyData[key]
+		if enemy[0] <= worldDif:
+			possibleEnemies.append(enemy)
+	
+	# once we determine which enemies can spawn, select one of them for this enemy		
+	var SelectedStats = possibleEnemies[randi() % possibleEnemies.size()]
+	
+	# we then assign the stats according to the enemy
+	health = SelectedStats[1]
+	AC = SelectedStats[2]
+	attack = SelectedStats[3]
+	defense = SelectedStats[4]
+	attackBonus = SelectedStats[5]
+	speed = (randi() % 20) + 1
+	soulValue = SelectedStats[6]
+	
+	var texturePath = str("res://Assets/", SelectedStats[7])
+	self.texture = load(texturePath)
+	
+	# old enemy generation method
+	'''
 	health = 5.0 * randi_range(worldDif/2 + 1, worldDif)
 	AC = 10
 	attack = 1.0 * randi_range(worldDif/2 + 1, worldDif)
@@ -50,6 +81,7 @@ func _ready():
 	speed = (randi() % 20) + 1
 	
 	soulValue = 100 * worldDif
+	'''
 	
 
 func takeDamage(amount, bonus):
